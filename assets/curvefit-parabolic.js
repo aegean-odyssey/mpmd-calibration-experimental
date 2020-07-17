@@ -1,6 +1,21 @@
-/*
-
-*/
+/* 
+ * curvefit-parabolic.js
+ * https://github.com/aegean-odyssey/mpmd-calibration-experimental
+ *
+ * Copyright (c) 2020 Aegean Associates, Inc.
+ * 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 function curvefit(s, f) {
 
@@ -55,10 +70,11 @@ function curvefit(s, f) {
         return s + math.format(v, w) + f;
     }
 
+    o('G28');
     o('; bilinear bed level mesh, least-square fit to a paraboloid');
     o('; z = $0 x^2 + $1 y^2 + $2 x y + $3 x + $4 y + $5', a(FIT));
     o('; residual = $0', [ n(RES,5) ]);
-    o('G28#  ; MUST home before using G29 code');
+    o('G29 L$0 R$1 B$0 F$1 C0 ; $2 x $2', [ -R, R, N ]);
     for (var j = 0; j < N; j++) {
         var y = grid(j);
         for (var i = 0; i < N; i++) {
@@ -67,7 +83,6 @@ function curvefit(s, f) {
 	      [ i, j, n(z(x, y),5), n(x,1), n(y,1) ]);
         }
     }
-    o('M400#');
     o('M400#');
     o('M118 {TQ\\:100}{SYS\\:STARTED}#');
     o('M118 {E\\:BEDFIX mesh applied}#');

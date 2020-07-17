@@ -3,11 +3,21 @@ layout: default
 title: MPMD Bed Level Correction, Parabolic Curve-fit
 form_handler: curvefit-parabolic.html
 ---
+<h2>WebApp</h2>
 <form action="#" id="FORM">
-  <label for="FILE">
-    <h2>CALIBRAT.TXT or BEDLEVEL.TXT <a href="">?</a></h2>
-    <p>description here</p>
-  </label>
-  <input type="file" id="FILE" accept="text/plain">
-  <input type="submit" value="Calculate">
+  <h3>Bed Level, Parabolic Correction</h3>
+  <cite>Post-process a CALIBRAT.TXT or BEDLEVEL.TXT file
+    to create a custom bed fix g-code file.</cite>
+  <div>
+    <h5>Select a CALIBRAT.TXT or BEDLEVEL.TXT file</h5>
+    <input type="file" id="FILE" accept="text/plain"/>
+    <input type="submit" value="Calculate"/>
+  </div>
+  <details>
+    <p>The mpmd_marlin_1.1.x firmware offers automatic calibration
+      and bed leveling, but maybe there's a way to improve it.</p>
+    <p>(more belongs here ...)</p>
+  </details>
+  <h6><a href="{{- site.sister_repository_url -}}"
+	 >{{- site.sister_repository_nwo -}}</a></h6>
 </form>
