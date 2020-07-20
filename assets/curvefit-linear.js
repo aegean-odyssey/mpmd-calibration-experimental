@@ -81,7 +81,7 @@ function curvefit(s, f) {
 
     o('; ');
     o('; bilinear bed level mesh, least-square fit to a plane');
-    o('; z = $0 x^2 + $1 y^2 + $2 x y + $3 x + $4 y + $5', a(FIT));
+    o('; z = $0 x + $1 y + $2', a(FIT));
     o('; residual = $0', [ n(RES,5) ]);
     o('G28 ; MUST home before using G29 code');
     o('G29 L$0 R$1 B$0 F$1 C0 ; $2 x $2', [ -R, R, N ]);
