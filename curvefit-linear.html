@@ -1,22 +1,26 @@
 ---
 layout: default
-title: MPMD Bed Level Correction, Linear Curve-fit
+title: MPMD Bed Level Mesh Correction, Linear Curve-fit
 form_handler: curvefit-linear.html
 ---
-<h2>WebApp</h2>
+<h2>Online Tool</h2>
 <form action="#" id="FORM">
-  <h3>Bed Level, Linear Correction</h3>
+  <h3>Bed Level Mesh, Linear Correction</h3>
   <cite>Post-process a CALIBRAT.TXT or BEDLEVEL.TXT file
     to create a custom bed fix g-code file.</cite>
   <div>
-    <h5>Select a CALIBRAT.TXT or BEDLEVEL.TXT file</h5>
+    <h5>Select an input file (e.g. CALIBRAT.TXT, BEDLEVEL.TXT)</h5>
     <input type="file" id="FILE" accept="text/plain"/>
-    <input type="submit" value="Calculate"/>
+  </div>
+  <div>
+    <h5>Add a note (optional, included in the output file)</h5>
+    <textarea id="NOTE"></textarea>
+  </div>
+  <div>
+    <input type="submit" value="Submit"/>
   </div>
   <details>
-    <p>The mpmd_marlin_1.1.x firmware offers automatic calibration
-      and bed leveling, but maybe there's a way to improve it.</p>
-    <p>(more belongs here ...)</p>
+    <p><i>more belongs here ...</i></p>
   </details>
   <h6><a href="{{- site.sister_repository_url -}}"
 	 >{{- site.sister_repository_nwo -}}</a></h6>

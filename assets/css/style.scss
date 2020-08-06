@@ -7,6 +7,10 @@
     border: solid 1pt gray;
     padding: 0.8em;
 
+    input[type = 'file'], textarea {
+	width: 99%;
+	resize: vertical;
+    }
     input[type='file'], input[type='input'] {
 	background-color: #e0e0e0;
     }
