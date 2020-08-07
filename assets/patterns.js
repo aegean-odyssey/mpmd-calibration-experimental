@@ -31,6 +31,8 @@ function g30(pattern, name) {
     const FILENAME = name;
     const MIMETYPE = "text/x-gcode";
 
+    const format = { notation: 'fixed', precision: 3 };
+    
     var ss = [];
 
     function s(u) {
@@ -43,7 +45,7 @@ function g30(pattern, name) {
     s('G28');
     for (const i in pattern) {
         const a = pattern[i];
-        s(math.print('G30 X$0 Y$1 V1', a, 6));
+        s(math.print('G30 X$0 Y$1 V1', a, format));
     }
     s('G1 X0 Y0 Z40');
     s('M400#');
@@ -56,6 +58,8 @@ function g30(pattern, name) {
 function bed(pattern, name) {
 
     var cloned = math.clone(pattern);
+
+    const format = { notation: 'fixed', precision: 2 };
 
     var ss = [];
 
@@ -74,15 +78,15 @@ function bed(pattern, name) {
     s('   </marker>');
     s('  </defs>');
     s('  <circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
-    const point = '  <circle cx="$0" cy="$1" r="10" stroke-width="6" stroke="white"/>';
+    const point = '  <circle cx="$0" cy="$1" r="10" stroke-width="7" stroke="white"/>';
     const arrow = '  <line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#arrow)"/>';
     cloned.reverse();  // display in reverse for cleaner overlapping arrows
     var a = (cloned.shift()).map(u => 10 * u);
-    s(math.print(point, a, 5));
+    s(math.print(point, a, format));
     for (const i in cloned) {
         const b = (cloned[i]).map(u => 10 * u);
-        s(math.print(arrow, b.concat(a), 5));
-        s(math.print(point, b, 5));
+        s(math.print(point, b, format));
+        s(math.print(arrow, b.concat(a), format));
         a = b;
     }
     const tower = '  <g transform="rotate($0)">$1</g>';
