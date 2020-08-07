@@ -82,13 +82,15 @@ function bed(pattern, name) {
     const arrow = '  <line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#arrow)"/>';
     cloned.reverse();  // display in reverse for cleaner overlapping arrows
     var a = (cloned.shift()).map(u => 10 * u);
-    s(math.print(point.replace(/[/]>/, ' fill="green"/>'), a, format));
+    s(math.print(point, a, format));
     for (const i in cloned) {
         const b = (cloned[i]).map(u => 10 * u);
         s(math.print(point, b, format));
         s(math.print(arrow, b.concat(a), format));
         a = b;
     }
+    const first = '  <circle cx="$0" cy="$1" r="10" stroke="none" fill="limegreen"/>';
+    s(math.print(first, a, format)); // re-color the last (actually the first)
     const tower = '  <g transform="rotate($0)">$1</g>';
     const T = '<line x1="0" y1="535" x2="0" y2="570" stroke-width="10"/>';
     s(math.print(tower, [0, T]));
