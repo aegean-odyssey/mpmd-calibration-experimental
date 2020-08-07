@@ -82,7 +82,7 @@ function bed(pattern, name) {
     const arrow = '  <line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#arrow)"/>';
     cloned.reverse();  // display in reverse for cleaner overlapping arrows
     var a = (cloned.shift()).map(u => 10 * u);
-    s(math.print(point, a, format));
+    s(math.print(point.replace(/[/]>/, ' fill="green"/>'), a, format));
     for (const i in cloned) {
         const b = (cloned[i]).map(u => 10 * u);
         s(math.print(point, b, format));
