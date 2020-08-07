@@ -19,11 +19,11 @@
 
 function R(r, t) {
     t = t * math.pi / 180.0;
-    return [ 10*r * math.cos(t), 10*r * math.sin(t) ];
+    return [ r * math.cos(t), r * math.sin(t) ];
 }
 
 function X(x, y) {
-    return [ 10*x, 10*y ];
+    return [ x, y ];
 }
 
 function g30(pattern, name) {
@@ -43,7 +43,7 @@ function g30(pattern, name) {
     s('G28');
     for (const i in pattern) {
         const a = pattern[i];
-        s(math.print('G30 X$0 Y$1 V1', a));
+        s(math.print('G30 X$0 Y$1 V1', a, 6));
     }
     s('G1 X0 Y0 Z40');
     s('M400#');
@@ -55,8 +55,7 @@ function g30(pattern, name) {
 
 function bed(pattern, name) {
 
-    var reversed = pattern.map(function(u) { return u });  // top-level clone
-    reversed.reverse();  // display in reverse for cleaner overlapping arrows
+    var cloned = math.clone(pattern);
 
     var ss = [];
 
@@ -67,7 +66,7 @@ function bed(pattern, name) {
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" ');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
     s(' preserveAspectRatio="xMidYMid meet">');
-    s(' <g transform="scale(1,-1)" stroke-width="2" stroke="steelblue">');
+    s(' <g transform="scale(1,-1)" stroke-width="2" stroke="steelblue" fill="black">');
     s('  <defs>');
     s('   <marker id="arrow" orient="auto" markerUnits="strokeWidth"');
     s('    markerWidth="11" markerHeight="7" refX="18" refY="3">');
@@ -75,14 +74,15 @@ function bed(pattern, name) {
     s('   </marker>');
     s('  </defs>');
     s('  <circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
-    const point = '  <circle cx="$0" cy="$1" r="12" stroke="white" fill="black"/>';
+    const point = '  <circle cx="$0" cy="$1" r="10" stroke-width="6" stroke="white"/>';
     const arrow = '  <line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#arrow)"/>';
-    var a = reversed.shift();
-    s(math.print(point, a));
-    for (const i in reversed) {
-        const b = reversed[i];
-        s(math.print(arrow, b.concat(a)));
-        s(math.print(point, b));
+    cloned.reverse();  // display in reverse for cleaner overlapping arrows
+    var a = (cloned.shift()).map(u => 10 * u);
+    s(math.print(point, a, 5);
+    for (const i in cloned) {
+        const b = (cloned[i]).map(u => 10 * u);
+        s(math.print(arrow, b.concat(a), 5));
+        s(math.print(point, b, 5));
         a = b;
     }
     const tower = '  <g transform="rotate($0)">$1</g>';
