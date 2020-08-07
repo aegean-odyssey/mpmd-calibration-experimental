@@ -55,6 +55,9 @@ function g30(pattern, name) {
 
 function bed(pattern, name) {
 
+    var reversed = pattern.map(function(u) { return u });  // top-level clone
+    reversed.reverse();  // display in reverse for cleaner overlapping arrows
+
     var ss = [];
 
     function s(u) {
@@ -74,11 +77,10 @@ function bed(pattern, name) {
     s('  <circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
     const point = '  <circle cx="$0" cy="$1" r="12" stroke="white" fill="black"/>';
     const arrow = '  <line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#arrow)"/>';
-    pattern.reverse();  // display in reverse for cleaner overlapping arrows
-    var a = pattern.shift();
+    var a = reversed.shift();
     s(math.print(point, a));
-    for (const i in pattern) {
-        const b = pattern[i];
+    for (const i in reversed) {
+        const b = reversed[i];
         s(math.print(arrow, b.concat(a)));
         s(math.print(point, b));
         a = b;
@@ -90,5 +92,5 @@ function bed(pattern, name) {
     s(math.print(tower, [240, T]));
     s(' </g>');
     s('</svg>');
-    return s.join('');
+    return ss.join('');
 }
