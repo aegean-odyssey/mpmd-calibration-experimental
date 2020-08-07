@@ -89,7 +89,7 @@ function bed(pattern, name) {
         s(math.print(arrow, b.concat(a), format));
         a = b;
     }
-    const first = '  <circle cx="$0" cy="$1" r="10" stroke="none" fill="limegreen"/>';
+    const first = '  <circle cx="$0" cy="$1" r="8" stroke="none" fill="limegreen"/>';
     s(math.print(first, a, format)); // re-color the last (actually the first)
     const tower = '  <g transform="rotate($0)">$1</g>';
     const T = '<line x1="0" y1="535" x2="0" y2="570" stroke-width="10"/>';
