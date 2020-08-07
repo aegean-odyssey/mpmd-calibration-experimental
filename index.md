@@ -13,9 +13,9 @@ Here are some scripts that can be used to post-process the bed-level mesh of Mon
 * [inverse distance weight interpolation](curvefit-inv_dist_wgt.html)
 
 ##### BED PROBING PATTERNS
-* [4-points radial pattern](pattern-radial-4.html)
-* [7-points radial pattern](pattern-radial-7.html)
-* [37-points radial pattern](pattern-radial-37.html)
+* [radial pattern of 4-points](pattern-radial-4.html)
+* [radial pattern of 7-points](pattern-radial-7.html)
+* [radial pattern of 37-points](pattern-radial-37.html)
 
 ##### MACHINE GEOMETRY CORRECTIONS
 * _more to come..._
