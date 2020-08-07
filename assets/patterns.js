@@ -28,7 +28,7 @@ function X(x, y) {
 
 function g30(pattern, name) {
     const FILENAME = name;
-    const MIMETYPE = { type: "text/x-gcode", endings: "transparent" };
+    const MIMETYPE = "text/x-gcode";
 
     var s = [];
     s.push('M988 /G30PROBE.TXT');
@@ -39,15 +39,16 @@ function g30(pattern, name) {
         const a = pattern[i];
         s.push(math.print('G30 X$0 Y$1 V1', a));
     }
+    s.push('G1 X0 Y0 Z40');
     s.push('M400#');
     s.push('M989');
     s.push('M118 {TQ\\:100}{SYS\\:STARTED}#');
-    s.push('M118 {E\\: BEDPROBE.TXT }#');
-    return [ 0, s, FILENAME, MIMETYPE ];
+    s.push('M118 {E\:Done! (see /G30PROBE.TXT)}#\n');
+    return [ 0, s.join('\n'), FILENAME, MIMETYPE ];
 }
 
 function bed(pattern, name) {
-    
+
     var s = [];
     s.push('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" ');
     s.push(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
@@ -76,6 +77,6 @@ function bed(pattern, name) {
     s.push(math.print(tower, [120, T]));
     s.push(math.print(tower, [240, T]));
     s.push(' </g>');
-    s.push('</svg>');
+    s.push('</svg>\n');
     return s.join('\n');
 }
