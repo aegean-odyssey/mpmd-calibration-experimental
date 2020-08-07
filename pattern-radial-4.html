@@ -1,0 +1,15 @@
+---
+layout: default
+title: MPMD Probe Pattern Generator, 4-points (radial)
+form_handler: patterns.html
+pattern_name: 4-points, radial
+pattern_file: G30_4pts_radial.gcode
+pattern-data: PATTERN
+---
+
+<script>
+  // X(x, y), R(r, 𝛉)
+  PATTERN = [ X(0, 0), R(50, 0), R(50, 120), R(50, 240) ];
+</script>
+
+{%- include patterns-page.html -%}

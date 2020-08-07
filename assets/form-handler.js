@@ -44,11 +44,20 @@ window.addEventListener('load', function() {
         fr.readAsText(document.getElementById('FILE').files[0]);
     }
     const f = document.getElementById('FORM');
-    f.addEventListener('submit', submit, false);
+    if (f) f.addEventListener('submit', submit, false);
 });
 
 function T(me, id) {
     const s = document.getElementById(id).style;
     me.innerHTML = (s.display != 'block') ? '...less' : 'more...';
     s.display = (s.display != 'block') ? 'block' : 'none';
+}
+
+function deliver(data) {
+    const [ result, strs, name, mime ] = data;
+    const ops = { type: mime, endings: "transparent" };
+    const URL = window.URL || window.webkitURL;
+    var url = URL.createObjectURL(new File(strs, name, ops));
+    window.location = url;
+    URL.revokeObjectURL(url);
 }
