@@ -66,15 +66,14 @@ function bed(pattern, name) {
     function s(u) {
 	ss.push(u);
     }
-    s(math.print("<img alt=\"$0\" src='data:image/svg+xml;utf8,", [name]));
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
     s(' preserveAspectRatio="xMidYMid meet">');
-    s('<g transform="scale(1,-1)" stroke-width="2" stroke="steelblue"');
+    s('<g transform="scale(1,-1)" stroke-width="1.8" stroke="steelblue"');
     s(' fill="black">');
     s('<defs>');
     s('<marker id="m" orient="auto" markerUnits="strokeWidth"');
-    s(' markerWidth="11" markerHeight="7" refX="18" refY="3">');
+    s(' markerWidth="10" markerHeight="6" refX="18" refY="3">');
     s('<path d="M10,0 L0,3 L10,6 L6,3 M10,0" fill="steelblue"/>');
     s('</marker>');
     s('</defs>');
@@ -104,6 +103,5 @@ function bed(pattern, name) {
     s(math.print(tower, [240, T]));
     s('</g>');
     s('</svg>');
-    s("'/>");
     return ss.join('');
 }
