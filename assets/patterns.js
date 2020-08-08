@@ -66,7 +66,7 @@ function bed(pattern, name) {
     function s(u) {
 	ss.push(u);
     }
-    s(math.print("<img alt=\"$0\" src='data:image/svg+xml;utf8,", name));
+    s(math.print("<img alt=\"$0\" src='data:image/svg+xml;utf8,", [name]));
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
     s(' preserveAspectRatio="xMidYMid meet">');
