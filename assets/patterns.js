@@ -79,6 +79,11 @@ function bed(pattern, name) {
     s('</marker>');
     s('</defs>');
     s('<circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
+    const tower = '<g transform="rotate($0)">$1</g>';
+    const T = '<line x1="0" y1="535" x2="0" y2="570" stroke-width="10"/>';
+    s(math.print(tower, [0, T]));
+    s(math.print(tower, [120, T]));
+    s(math.print(tower, [240, T]));
     cloned.reverse();  // display in reverse for cleaner overlapping arrows
     const pt = '<circle cx="$0" cy="$1" r="10" stroke-width="7" stroke="white"/>';
     const p2 = '<circle cx="$0" cy="$1" r="7" stroke="none" fill="black"/>';
@@ -97,11 +102,6 @@ function bed(pattern, name) {
         const b = (cloned[i]).map(u => 10 * u);
         s(math.print(p2, b, format));
     }
-    const tower = '<g transform="rotate($0)">$1</g>';
-    const T = '<line x1="0" y1="535" x2="0" y2="570" stroke-width="10"/>';
-    s(math.print(tower, [0, T]));
-    s(math.print(tower, [120, T]));
-    s(math.print(tower, [240, T]));
     s('</g>');
     s('</svg>');
     return ss.join('');
