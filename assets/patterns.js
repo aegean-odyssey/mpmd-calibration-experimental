@@ -38,14 +38,14 @@ function g30(pattern, name) {
     function s(u) {
 	ss.push(u + '\n');
     }
-    
+
     s('M988 /G30PROBE.TXT');
     s('M115');
     s('M503');
     s('G28');
     for (const i in pattern) {
         const a = pattern[i];
-        s(math.print('G30 X$0 Y$1 V1', a, format));
+        s(math.print('G30 V1 X$0 Y$1', a, format));
     }
     s('G1 X0 Y0 Z40');
     s('M400#');
@@ -66,10 +66,11 @@ function bed(pattern, name) {
     function s(u) {
 	ss.push(u);
     }
+
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
     s(' preserveAspectRatio="xMidYMid meet">');
-    s('<g transform="scale(1,-1)" stroke-width="1.8" stroke="steelblue"');
+    s('<g transform="scale(1,-1)" stroke-width="2" stroke="steelblue"');
     s(' fill="black">');
     s('<defs>');
     s('<marker id="m" orient="auto" markerUnits="strokeWidth"');
