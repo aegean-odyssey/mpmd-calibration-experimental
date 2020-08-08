@@ -64,39 +64,46 @@ function bed(pattern, name) {
     var ss = [];
 
     function s(u) {
-	ss.push(u + '\n');
+	ss.push(u);
     }
-    
-    s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" ');
+    s(math.print("<img alt=\"$0\" src='data:image/svg+xml;utf8,", name));
+    s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
     s(' preserveAspectRatio="xMidYMid meet">');
-    s(' <g transform="scale(1,-1)" stroke-width="2" stroke="steelblue" fill="black">');
-    s('  <defs>');
-    s('   <marker id="arrow" orient="auto" markerUnits="strokeWidth"');
-    s('    markerWidth="11" markerHeight="7" refX="18" refY="3">');
-    s('    <path d="M0,0 L10,3 L0,6 L4,3 z" fill="steelblue"/>');
-    s('   </marker>');
-    s('  </defs>');
-    s('  <circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
-    const point = '  <circle cx="$0" cy="$1" r="10" stroke-width="7" stroke="white"/>';
-    const arrow = '  <line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#arrow)"/>';
+    s('<g transform="scale(1,-1)" stroke-width="2" stroke="steelblue"');
+    s(' fill="black">');
+    s('<defs>');
+    s('<marker id="m" orient="auto" markerUnits="strokeWidth"');
+    s(' markerWidth="11" markerHeight="7" refX="18" refY="3">');
+    s('<path d="M10,0 L0,3 L10,6 L6,3 M10,0" fill="steelblue"/>');
+    s('</marker>');
+    s('</defs>');
+    s('<circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
     cloned.reverse();  // display in reverse for cleaner overlapping arrows
-    var a = (cloned.shift()).map(u => 10 * u);
-    s(math.print(point, a, format));
-    for (const i in cloned) {
+    const pt = '<circle cx="$0" cy="$1" r="10" stroke-width="7" stroke="white"/>';
+    const p2 = '<circle cx="$0" cy="$1" r="7" stroke="none" fill="black"/>';
+    const aw = '<line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#m)"/>';
+    var a = (cloned[0]).map(u => 10 * u);
+    s(math.print(pt, a, format));
+    for (var i = 1; i < cloned.length; i++) {
         const b = (cloned[i]).map(u => 10 * u);
-        s(math.print(point, b, format));
-        s(math.print(arrow, b.concat(a), format));
+        s(math.print(pt, b, format));
+        s(math.print(aw, a.concat(b), format));
         a = b;
     }
-    const first = '  <circle cx="$0" cy="$1" r="8" stroke="none" fill="limegreen"/>';
-    s(math.print(first, a, format)); // re-color the last (actually the first)
-    const tower = '  <g transform="rotate($0)">$1</g>';
+    cloned.reverse();
+    s(math.print(p2.replace(/black/, "limegreen"), a, format));
+    for (var i = 1; i < cloned.length; i++) {
+        const b = (cloned[i]).map(u => 10 * u);
+        s(math.print(p2, b, format));
+    }
+    const tower = '<g transform="rotate($0)">$1</g>';
     const T = '<line x1="0" y1="535" x2="0" y2="570" stroke-width="10"/>';
     s(math.print(tower, [0, T]));
     s(math.print(tower, [120, T]));
     s(math.print(tower, [240, T]));
-    s(' </g>');
+    s('</g>');
     s('</svg>');
+    s("'/>");
     return ss.join('');
 }
