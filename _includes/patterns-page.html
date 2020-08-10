@@ -5,14 +5,14 @@
     that probes the print bed according to the pattern below. The command
     collects the results in the file, "\G30PROBE.TXT", which can be used
     as input for the Mesh Correction online tools.</cite>
-  <h5><a onclick="deliver(g30({{- page.pattern_data -}}, '{{- page.pattern_file -}}'));"
-	 href="#">Generate G-code</a></h5>
-  <h6><a href="{{- site.sister_repository_url -}}"
-	 >{{- site.sister_repository_nwo -}}</a></h6>
+  <h4><a onclick="deliver(g30({{- page.pattern_data -}}, '{{- page.pattern_file -}}'));"
+	 href="#">Generate G-code</a></h4>
   <div id="BED"></div>
   <details>
     {{ page.pattern_note }}
   </details>
+  <h6><a href="{{- site.sister_repository_url -}}"
+	 >{{- site.sister_repository_nwo -}}</a></h6>
 </div>
 <script>
   document.getElementById("BED").innerHTML =
