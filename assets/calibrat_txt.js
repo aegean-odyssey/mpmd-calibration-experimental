@@ -173,8 +173,8 @@ function curvefit(s, f) {
     // patch up the script and style urls
     let url = math.print("$0//$1", [ window.location.protocol,
 				     window.location.hostname ]);
-    page_upper = page_upper.replace(/(href|src)=\"\//g, '$1=' + url + '/');
-    page_lower = page_lower.replace(/(href|src)=\"\//g, '$1=' + url + '/');
+    page_upper = page_upper.replace(/(href|src)=\"\//g, '$1="' + url + '/');
+    page_lower = page_lower.replace(/(href|src)=\"\//g, '$1="' + url + '/');
 
     let ss;
     ss = BEDX.map(function(u) { return u.match(/[-+.0-9]+/g) });
