@@ -170,6 +170,11 @@ function curvefit(s, f) {
     let [ page_upper, , page_lower ] =
 	(document.documentElement.innerHTML).split(/<\/?section>/);
 
+    let url = math.print("$0$1//", [ window.location.protocol,
+				     window.location.hostname ]);
+
+    page_upper = page_upper.replace(/(href|src)=\"\//g, '$1=' + url + '/');
+
     let ss;
     ss = BEDX.map(function(u) { return u.match(/[-+.0-9]+/g) });
     let bXY = ss.map(function(u) { return [ +u[0], +u[1] ] });
