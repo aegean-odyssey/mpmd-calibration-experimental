@@ -39,11 +39,11 @@ function curvefit(s, f) {
     var Z  = SS.map(function(u) { return +u[2] });
 
     function interpolate(x, y, XY, Z) {
-        let H = XY.map(function(u) { return math.hypot(x-u[0],y-u[1]) });
-        let i = H.findIndex(function(u) { return (u < 0.0001) });
+        let H = XY.map(u => math.pow(math.hypot(x - u[0], y - u[1]), 4));
+        let i = H.findIndex(u => (u < 0.0001));
         if (i < 0) {
-            let N = H.reduce(function(v, u, i) { return v + (Z[i]/u) });
-            let D = H.reduce(function(v, u) { return v + (1.0/u) });
+            let N = H.reduce((v, u, i) => v + (Z[i]/u), 0);
+            let D = H.reduce((v, u) => v + (1.0/u), 0);
             return N/D;
         }
         return Z[i];
