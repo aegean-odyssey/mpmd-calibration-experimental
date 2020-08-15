@@ -183,6 +183,7 @@ function curvefit(s, f) {
         ss.push(math.print(u, v) + "\n");
     }
 
+    o('<!DOCTYPE html>');
     o('<html>');
     o(page_upper);
     o('<section>');
