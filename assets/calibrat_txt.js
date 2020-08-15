@@ -170,10 +170,11 @@ function curvefit(s, f) {
     let [ page_upper, , page_lower ] =
 	(document.documentElement.innerHTML).split(/<\/?section>/);
 
-    let url = math.print("$0$1//", [ window.location.protocol,
+    // patch up the script and style urls
+    let url = math.print("$0//$1", [ window.location.protocol,
 				     window.location.hostname ]);
-
     page_upper = page_upper.replace(/(href|src)=\"\//g, '$1=' + url + '/');
+    page_lower = page_lower.replace(/(href|src)=\"\//g, '$1=' + url + '/');
 
     let ss;
     ss = BEDX.map(function(u) { return u.match(/[-+.0-9]+/g) });
@@ -191,7 +192,7 @@ function curvefit(s, f) {
     o('<!DOCTYPE html>');
     o('<html>');
     o(page_upper);
-    o('<section>');
+    o('<section class="monospace">');
 
     o('<h2>CALIBRAT.TXT</h2>');
 

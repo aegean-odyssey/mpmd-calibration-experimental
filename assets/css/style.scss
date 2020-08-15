@@ -44,6 +44,10 @@
     }
 }
 
+section.monospace {
+    font-family: monospace;
+}
+
 @media print {
     details.heatmap {
 	page-break-inside: avoid;
