@@ -1,0 +1,28 @@
+---
+layout: default
+title: Report, View CALIBRAT.TXT
+form_handler: calibrat_txt.html
+---
+<h2>Online Tool</h2>
+<form action="#" id="FORM">
+  <h3>Calibration Report (CALIBRAT.TXT)</h3>
+  <cite>View the calibration results, that is, the information saved
+    in the file, CALIBRAT.TXT, by the AUTO_CALIBRATE.gcode (or the
+    CALIBRATE_25MM.gcode) command during auto-calibration.</cite>
+  <div>
+    <h5>Select the calibration results file (i.e. CALIBRAT.TXT)</h5>
+    <input type="file" id="FILE" accept="text/plain"/>
+  </div>
+  <div>
+    <h5>Add a note (optional, included in the report)</h5>
+    <textarea id="NOTE"></textarea>
+  </div>
+  <div>
+    <input type="submit" value="Submit"/>
+  </div>
+  <details>
+    <p><i>more belongs here ...</i></p>
+  </details>
+  <h6><a href="{{- site.sister_repository_url -}}"
+	 >{{- site.sister_repository_nwo -}}</a></h6>
+</form>

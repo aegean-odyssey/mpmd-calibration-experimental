@@ -30,3 +30,27 @@
 	font-size: 92%;
     }
 }
+
+.plot {
+    -webkit-columns: 2 2in;
+    -moz-columns: 2 2in;
+    columns: 2 2in;
+
+    ul {
+	white-space: nowrap;
+	-webkit-column-break-inside: avoid;
+	page-break-inside: avoid;
+	break-inside: avoid;
+    }
+}
+
+@media print {
+    details.heatmap {
+	page-break-inside: avoid;
+	break-inside: avoid;
+    }
+    object.heatmap {
+	width: 95mm;
+	height: 95mm;
+    }
+}
