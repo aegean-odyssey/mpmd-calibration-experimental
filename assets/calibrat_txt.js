@@ -144,6 +144,11 @@ function heatmap(xy, z, t) {
     return 'data:image/svg+xml;base64,' + window.btoa(ss.join(''));
 }
 
+function xy_from_grid(n) {
+    const R = 55, N = 7;
+    return math.round(((2 * n - (N - 1)) * R) / (N - 1));
+}
+
 function curvefit(str, form) {
 
     const FILENAME = 'CALIBRAT.TXT.html';
@@ -168,6 +173,10 @@ function curvefit(str, form) {
     let gXY = ss.map(u => [+u[4], +u[5]]);
     let gZ = ss.map(u => +u[3]);
 
+    if (ss[0].length < 6)
+	// x, y are missing, so guess using mesh indices
+	gXY = ss.map(u => [xy_from_grid(+u[1]), xy_from_grid(+u[2])]);
+    
     ss = [];
     function s(u, v=[]) {
         ss.push(math.print(u, v) + "\n");
