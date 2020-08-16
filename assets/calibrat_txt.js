@@ -53,11 +53,15 @@ function mesh(XY, Z, R=55, N=15) {
 
 function heatmap(xy, z, t) {
 
-    const probe = t.includes("robe");
+    const is_probe = t.includes("robe");
 
-    function gradient(v) {
-	function f(x) {
-	    let r = math.floor(x * 0x400);
+    function find_radius(xy) {
+	return math.max(math.abs(math.min(xy)), math.abs(math.max(xy)));
+    }
+	
+    function gradient(z) {
+	function f(v) {
+	    let r = math.floor(v * 0x400);
 	    let c = math.bitAnd(r, 0xff);
 	    let n = math.bitNot(c);
 	    switch(math.bitAnd(r, 0x300)) {
@@ -67,22 +71,18 @@ function heatmap(xy, z, t) {
 	    case 0x300: return [ 255, n, 0 ];
 	    }
 	}
-	return math.print('rgb($0, $1, $2)', f(v));
-
+	return math.print('rgb($0, $1, $2)', f(z));
     }
 
-    let _XY, _Z, _R, _N;
-    if (probe)
-	[ _XY, _Z, _R, _N ] = mesh(xy, z);
+    let XY, Z, R, N;
+    if (is_probe)
+	[ XY, Z, R, N ] = mesh(xy, z);
     else
-	[ _XY, _Z, _R, _N ] = mesh(xy, z,
-				   math.max(math.abs(math.min(xy)),
-					    math.abs(math.max(xy))),
-				   7);
+	[ XY, Z, R, N ] = mesh(xy, z, find_radius(xy), 7);
 
-    let zavg = math.mean(_Z);
-    let zmin = math.min(_Z);
-    let zmax = math.max(_Z);
+    let zavg = math.mean(Z);
+    let zmin = math.min(Z);
+    let zmax = math.max(Z);
     let zlow = math.max(zavg - zmin, zmax - zavg);
 
     let ss = [];
@@ -90,25 +90,14 @@ function heatmap(xy, z, t) {
 	ss.push(math.print(u, v));
     }
 
-    function f(v) {
+    function pf(v) {
 	let s = (v < 0) ? '' : '+';
 	return s + String(math.fix((v * 1000) + 1/2) / 1000);
     }
-    
-    function datum(u, i) {
-	let c = '<circle cx="$0" cy="$1" r="$2"><title>$3 mm</title></circle>';
-	let [ x, y ] = u.map(n => n * 10.0);
-	s(c, [ x, y, 15, f(z[i]) ]);
-    }
 
-    function tiled(u, i) {
-	let r = ('<rect x="$0" y="$1" height="$2" width="$2" fill="$3">' +
-		 '<title>$4 mm</title></rect>');
-	let o = _R / (_N - 1);
-	let [ x, y ] = u.map(n => (n - o) * 10.0);
-	let z = (_Z[i] - (zavg - zlow)) / zlow / 2.0;
-	s(r, [ x, y, 20.0 * o, gradient(z), f(_Z[i]) ]);
-    }
+    const CC = '<circle cx="$0" cy="$1" r="$2"><title>$3 mm</title></circle>';
+    const RR = ('<rect x="$0" y="$1" height="$2" width="$2" fill="$3">' +
+		'<title>$4 mm</title></rect>');
 
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-700 -700 1400 1400"');
@@ -121,120 +110,127 @@ function heatmap(xy, z, t) {
     s('<stop offset="75%"  stop-color="#FF0"/>');
     s('<stop offset="100%" stop-color="#F00"/>');
     s('</linearGradient>');
-    s('<g id="key" transform="scale(1,-1) translate(0,700)" font-size="28">');
+    s('<g id="KEY" transform="scale(1,-1) translate(0,700)" font-size="28">');
     s('<rect x="-350" y="-80" width="700" height="50"');
     s(' stroke="white" stroke-width="8" fill="url(#gradient)"/>');
-    s('<text text-anchor="start" x="-350" y="-3">$0</text>', [ f(zavg-zlow) ]);
-    s('<text text-anchor="middle" x="0" y="-3">$0</text>', [ f(zavg) ]);
-    s('<text text-anchor="end" x="350" y="-3">$0</text>', [ f(zavg+zlow) ]);
+    s('<text text-anchor="start" x="-350" y="-3">$0</text>', [pf(zavg-zlow)]);
+    s('<text text-anchor="middle" x="0" y="-3">$0</text>', [pf(zavg)]);
+    s('<text text-anchor="end" x="350" y="-3">$0</text>', [pf(zavg+zlow)]);
+    s('</g>');
+    s('<g id="BED">');
+    s('<circle cx="0" cy="0" r="550" stroke="black" fill="none"/>');
+    s('<line id="T" x1="0" y1="535" x2="0" y2="580" stroke-width="13"/>');
+    s('<g transform="rotate(120)"><use href="#T"/></g>');
+    s('<g transform="rotate(240)"><use href="#T"/></g>');
     s('</g>');
     s('</defs>');
     s('<g transform="scale(1,-1)" stroke-width="2" stroke="black">');
     s('<g stroke="white" stroke-width="1">');
-    _XY.map(tiled);
+    XY.forEach(function(u, i) {	let o = R/(N-1), w = 20.0 * o;
+				let [ x, y ] = u.map(n => (n - o) * 10.0);
+				let z = (Z[i] - (zavg - zlow)) /zlow /2.0;
+				s(RR, [x, y, w, gradient(z), pf(Z[i])]) });
     s('</g>');
-    s('<circle cx="0" cy="0" r="550" stroke="black" fill="none"/>');
-    const tower = '<g transform="rotate($0)">$1</g>';
-    const T = '<line x1="0" y1="535" x2="0" y2="580" stroke-width="13"/>';
-    s(math.print(tower, [0, T]));
-    s(math.print(tower, [120, T]));
-    s(math.print(tower, [240, T]));
-    if (probe) {
+    if (is_probe) {
 	s('<g stroke="none" fill="black" fill-opacity="0.5">');
-	xy.map(datum);
+	xy.forEach(function (u, i) { let [x, y] = u.map(n => n * 10.0);
+				     s(CC, [x, y, 15, pf(z[i])]) });
 	s('</g>');
     }
-    s('<use href="#key"/>');
+    s('<use href="#BED"/>');
+    s('<use href="#KEY"/>');
     s('</g>');
     s('</svg>');
     return 'data:image/svg+xml;base64,' + window.btoa(ss.join(''));
 }
 
-function curvefit(s, f) {
+function curvefit(str, form) {
 
     const FILENAME = 'CALIBRAT.TXT.html';
     const MIMETYPE = 'text/html';
     
-    NOTE = f.elements.NOTE.value;
+    NOTE = form.elements.NOTE.value;
 
-    FW = s.match(/mpmd_marlin[^\)]+\)/);
-    M92 = s.match(/^  M92.+/m);
-    M665 = s.match(/^  M665.+/m);
-    M665_A = s.match(/^  M665 A.+/m);
-    M666 = s.match(/^  M666.+/m);
-    M851 = s.match(/^  M851.+/m);
-    BEDX = s.match(/Bed X.+/gm);
-    G29W = s.match(/^  G29 W.+/gm);
-
-    // grab these to preserve the theme in our generated page
-    let [ page_upper, , page_lower ] =
-	(document.documentElement.innerHTML).split(/<\/?section>/);
-
-    // patch up the script and style urls
-    let url = math.print("$0//$1", [ window.location.protocol,
-				     window.location.hostname ]);
-    page_upper = page_upper.replace(/(href|src)=\"\//g, '$1="' + url + '/');
-    page_lower = page_lower.replace(/(href|src)=\"\//g, '$1="' + url + '/');
+    FW = str.match(/mpmd_marlin[^\)]+\)/);
+    M92 = str.match(/^  M92.+/m);
+    M665 = str.match(/^  M665.+/m);
+    M665_A = str.match(/^  M665 A.+/m);
+    M666 = str.match(/^  M666.+/m);
+    M851 = str.match(/^  M851.+/m);
+    BEDX = str.match(/Bed X.+/gm);
+    G29W = str.match(/^  G29 W.+/gm);
 
     let ss;
-    ss = BEDX.map(function(u) { return u.match(/[-+.0-9]+/g) });
-    let bXY = ss.map(function(u) { return [ +u[0], +u[1] ] });
-    let bZ = ss.map(function(u) { return +u[2] });
-    ss = G29W.map(function(u) { return u.match(/[-+.0-9]+/g) });
-    let gXY = ss.map(function(u) { return [ +u[4], +u[5] ] });
-    let gZ = ss.map(function(u) { return +u[3] });
+    ss = BEDX.map(u => u.match(/[-+.0-9]+/g));
+    let bXY = ss.map(u => [+u[0], +u[1]]);
+    let bZ = ss.map(u => +u[2]);
+    ss = G29W.map(u => u.match(/[-+.0-9]+/g));
+    let gXY = ss.map(u => [+u[4], +u[5]]);
+    let gZ = ss.map(u => +u[3]);
 
     ss = [];
-    function o(u, v=[]) {
+    function s(u, v=[]) {
         ss.push(math.print(u, v) + "\n");
     }
 
-    o('<!DOCTYPE html>');
-    o('<html>');
-    o(page_upper);
-    o('<section class="monospace">');
+    s('<!DOCTYPE html>');
+    s('<html>');
 
-    o('<h2>CALIBRAT.TXT</h2>');
+    s('<head>');
+    s('<meta charset="UTF-8">');
+    s('<title>CALIBRAT.TXT</title>');
+    s('<link rel="stylesheet" href="$0//$1/$2/assets/css/report.css"/>',
+      [ window.location.protocol,
+	window.location.hostname,
+	window.location.pathname.split('/').slice(0,-1).join('/') ]);
+    s('</head>');
 
-    if (FW) o('<h4>FIRMWARE_NAME: $0</h4>', FW);
-    if (NOTE) o('<p>NOTE: $0</p>', [ NOTE ]);
+    s('<body>');
+    s('<header></header>');
+    s('<section>');
 
-    o('<details open>');
-    o('<summary>Machine Geometry/ Calibration</summary>');
-    o('<ul>');
-    if (M92 ) o('<li>$0</li>', M92);
-    if (M665) o('<li>$0</li>', M665);
-    if (M665_A) o('<li>$0</li>', M665_A);
-    if (M666) o('<li>$0</li>', M666);
-    if (M851) o('<li>$0</li>', M851);
-    o('</ul>');
-    o('</details>');
+    s('<h2>CALIBRAT.TXT</h2>');
 
-    o('<details class="heatmap">')
-    o('<summary>Probed Points</summary>');
-    o('<div class="plot">');
-    o('<object class="heatmap" data="$0" type="image/svg+xml"></object>',
-      new Array(heatmap(bXY, bZ, 'probed points')));
-    o('<ul>');
-    BEDX.map(function(u) { o('<li>$0</li>', [u]) });
-    o('</ul>');
-    o('</div>');
-    o('</details>');
+    if (FW) s('<h4>FIRMWARE_NAME: $0</h4>', FW);
+    if (NOTE) s('<p>NOTE: $0</p>', [NOTE]);
 
-    o('<details class="heatmap">')
-    o('<summary>Bed Level Mesh</summary>');
-    o('<div class="plot">');
-    o('<object class="heatmap" data="$0" type="image/svg+xml"></object>',
-      new Array(heatmap(gXY, gZ, 'bed level mesh')));
-    o('<ul>');
-    G29W.map(function(u) { o('<li>$0</li>', [u]) });
-    o('</ul>');
-    o('</div>');
-    o('</details>');
+    s('<details open>');
+    s('<summary>Machine Geometry/ Calibration</summary>');
+    s('<ul>');
+    if (M92 ) s('<li>$0</li>', M92);
+    if (M665) s('<li>$0</li>', M665);
+    if (M665_A) s('<li>$0</li>', M665_A);
+    if (M666) s('<li>$0</li>', M666);
+    if (M851) s('<li>$0</li>', M851);
+    s('</ul>');
+    s('</details>');
 
-    o('</section>');
-    o(page_lower);
-    o('</html>');
+    s('<details class="heatmap">')
+    s('<summary>Probed Points</summary>');
+    s('<div class="plot">');
+    s('<object class="heatmap" data="$0" type="image/svg+xml"></object>',
+      [heatmap(bXY, bZ, 'probed points')]);
+    s('<ul>');
+    BEDX.forEach(u => s('<li>$0</li>', [u]));
+    s('</ul>');
+    s('</div>');
+    s('</details>');
+
+    s('<details class="heatmap">')
+    s('<summary>Bed Level Mesh</summary>');
+    s('<div class="plot">');
+    s('<object class="heatmap" data="$0" type="image/svg+xml"></object>',
+      [heatmap(gXY, gZ, 'bed level mesh')]);
+    s('<ul>');
+    G29W.forEach(u => s('<li>$0</li>', [u]));
+    s('</ul>');
+    s('</div>');
+    s('</details>');
+
+    s('</section>');
+    s('<footer></footer>');
+    s('</body>');
+    s('</html>');
     
     return [ 0, ss, FILENAME, MIMETYPE ];
 }
