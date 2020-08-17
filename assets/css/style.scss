@@ -45,6 +45,10 @@
 }
 
 @media print {
+    #FORM, #PAGE {
+	border: none;
+	padding: 0;
+    }
     details {
 	page-break-inside: avoid;
 	break-inside: avoid;
