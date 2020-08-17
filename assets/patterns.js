@@ -30,23 +30,16 @@ function g30(pattern, name) {
 
     const FILENAME = name;
     const MIMETYPE = "text/x-gcode";
-
-    const format = { notation: 'fixed', precision: 3 };
     
     var ss = [];
-
-    function s(u) {
-	ss.push(u + '\n');
-    }
-
+    function s(u) { ss.push(u + '\n') }
     s('M988 /G30PROBE.TXT');
     s('M115');
     s('M503');
+    s('M111');
     s('G28');
-    for (const i in pattern) {
-        const a = pattern[i];
-        s(math.print('G30 V1 X$0 Y$1', a, format));
-    }
+    const format = { notation: 'fixed', precision: 3 };
+    pattern.forEach(u => s(math.print('G30 V1 X$0 Y$1', u, format)));
     s('G1 X0 Y0 Z40');
     s('M400#');
     s('M989');
@@ -57,52 +50,66 @@ function g30(pattern, name) {
 
 function bed(pattern, name) {
 
-    var cloned = math.clone(pattern);
-
     const format = { notation: 'fixed', precision: 2 };
 
-    var ss = [];
-
-    function s(u) {
-	ss.push(u);
+    function tag(u, i) {
+	function th_d(u) {
+	    let [x, y] = u;
+	    return math.atan2(y, x) * 180/math.pi;
+	}
+	return math.print(
+	    '#$1 (X:$2$0, Y:$3$0) (R:$4$0, &#952;:$5&#176;)',
+	    ['mm', String(i+1), u[0], u[1], math.hypot(u), th_d(u)],
+	    format);
     }
 
+    var cloned = math.clone(pattern);
+
+    var ss = [];
+    function s(u, v=[], f={}) { ss.push(math.print(u, v, f)) }
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');
     s(' preserveAspectRatio="xMidYMid meet">');
-    s('<g transform="scale(1,-1)" stroke-width="2" stroke="steelblue"');
-    s(' fill="black">');
     s('<defs>');
     s('<marker id="m" orient="auto" markerUnits="strokeWidth"');
     s(' markerWidth="10" markerHeight="6" refX="18" refY="3">');
     s('<path d="M10,0 L0,3 L10,6 L6,3 M10,0" fill="steelblue"/>');
     s('</marker>');
+    s('<line id="t" x1="0" y1="535" x2="0" y2="575" stroke-width="11"/>');
+    s('<g id="towers">');
+    s('<g transform="rotate(0)"><use href="#t"/></g>');
+    s('<g transform="rotate(120)"><use href="#t"/></g>');
+    s('<g transform="rotate(240)"><use href="#t"/></g>');
+    s('</g>');
     s('</defs>');
+    s('<g transform="scale(1,-1)" stroke-width="2" stroke="steelblue">');
     s('<circle cx="0" cy="0" r="550" stroke="grey" fill="none"/>');
-    const tower = '<g transform="rotate($0)">$1</g>';
-    const T = '<line x1="0" y1="535" x2="0" y2="570" stroke-width="10"/>';
-    s(math.print(tower, [0, T]));
-    s(math.print(tower, [120, T]));
-    s(math.print(tower, [240, T]));
+    s('<use href="#towers"/>');
     cloned.reverse();  // display in reverse for cleaner overlapping arrows
-    const pt = '<circle cx="$0" cy="$1" r="10" stroke-width="7" stroke="white"/>';
-    const p2 = '<circle cx="$0" cy="$1" r="7" stroke="none" fill="black"/>';
-    const aw = '<line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#m)"/>';
-    var a = (cloned[0]).map(u => 10 * u);
-    s(math.print(pt, a, format));
-    for (var i = 1; i < cloned.length; i++) {
+    const P='<circle cx="$0" cy="$1" r="10" stroke-width="7" stroke="white"/>';
+    let a = (cloned[0]).map(u => 10 * u);
+    s(P, a, format);
+    for (let i = 1; i < cloned.length; i++) {
         const b = (cloned[i]).map(u => 10 * u);
-        s(math.print(pt, b, format));
-        s(math.print(aw, a.concat(b), format));
+        s(P, b, format);
+        s('<line x1="$0" y1="$1" x2="$2" y2="$3" marker-end="url(#m)"/>',
+	  a.concat(b), format);
         a = b;
     }
     cloned.reverse();
-    s(math.print(p2.replace(/black/, "limegreen"), a, format));
-    for (var i = 1; i < cloned.length; i++) {
+    const Q = '<circle cx="$0" cy="$1" r="8"><title>$2</title></circle>';
+    s('<g stroke="none" fill="limegreen">');
+    s(Q, a.concat(tag(cloned[0], 0)), format);
+    s('</g>');
+    s('<g stroke="none" fill="black">');
+    for (let i = 1; i < cloned.length; i++) {
         const b = (cloned[i]).map(u => 10 * u);
-        s(math.print(p2, b, format));
+        s(Q, b.concat(tag(cloned[i], i)), format);
     }
     s('</g>');
+    s('</g>');
     s('</svg>');
-    return ss.join('');
+    ss = 'data:image/svg+xml;base64,' + window.btoa(ss.join(''));
+    return '<object class="pattern" type="image/svg+xml" data="'
+	+ ss + '"></object>';
 }
