@@ -35,9 +35,10 @@ function g30(pattern, name) {
     function s(u) { ss.push(u + '\n') }
     s('M988 /G30PROBE.TXT');
     s('M115');
-    s('M503');
     s('M111');
+    s('M503 S0');
     s('G28');
+    s('M420 S1');
     const format = { notation: 'fixed', precision: 3 };
     pattern.forEach(u => s(math.print('G30 V1 X$0 Y$1', u, format)));
     s('G1 X0 Y0 Z40');
