@@ -37,6 +37,8 @@ function g30(pattern, name) {
     s('M115');
     s('M111');
     s('M503 S0');
+    s('M851 Z0 ; ZERO offset as a standard');
+    s('M851    ; make a note in the output');
     s('G28');
     s('M420 S1');
     const format = { notation: 'fixed', precision: 3 };
