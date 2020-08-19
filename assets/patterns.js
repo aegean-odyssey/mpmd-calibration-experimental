@@ -31,7 +31,7 @@ function g30(pattern, name) {
     const FILENAME = name;
     const MIMETYPE = "text/x-gcode";
     
-    var ss = [];
+    let ss = [];
     function s(u) { ss.push(u + '\n') }
     s('M988 /G30PROBE.TXT');
     s('M115');
@@ -54,8 +54,7 @@ function bed(pattern, name) {
 
     function tag(u, i) {
 	function th_d(u) {
-	    let [x, y] = u;
-	    return math.atan2(y, x) * 180/math.pi;
+	    return math.atan2(u[1], u[0]) * 180.0 / math.pi;
 	}
 	return math.print(
 	    '#$1 (X:$2$0, Y:$3$0) (R:$4$0, &#952;:$5&#176;)',
@@ -63,9 +62,9 @@ function bed(pattern, name) {
 	    format);
     }
 
-    var cloned = math.clone(pattern);
+    let cloned = math.clone(pattern);  // don't change pattern
 
-    var ss = [];
+    let ss = [];
     function s(u, v=[], f={}) { ss.push(math.print(u, v, f)) }
     s('<svg xmlns="http://www.w3.org/2000/svg" version="1.1"');
     s(' width="100%" height="100%" viewBox="-600 -600 1200 1200"');

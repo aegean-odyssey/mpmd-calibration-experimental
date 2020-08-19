@@ -32,6 +32,10 @@
 window.addEventListener('load', function() {
     function process(file, form) {
 	const [ result, strs, name, mime ] = curvefit(file, form);
+	if (result) {
+	    window.alert(result);
+	    return;
+	}
 	const ops = { type: mime, endings: "transparent" };
         const URL = window.URL || window.webkitURL;
         var url = URL.createObjectURL(new File(strs, name, ops));

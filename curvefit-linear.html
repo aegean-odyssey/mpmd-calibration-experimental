@@ -2,26 +2,11 @@
 layout: default
 title: MPMD Bed Level Mesh Correction, Linear Curve-fit
 form_handler: curvefit-linear.html
+curvefit_name: Linear Correction
+curvefit_note: >
+  <p>The tool constructs a bed mesh that forms a plane that best fits
+    a set probed bed measurements or an existing bed level mesh.
+    Preference is given to probed data over existing bed mesh data.</p>
 ---
-<h2>Online Tool</h2>
-<form action="#" id="FORM">
-  <h3>Bed Level Mesh, Linear Correction</h3>
-  <cite>Post-process a CALIBRAT.TXT, BEDLEVEL.TXT, or G30PROBE.TXT file
-    to create a custom G-code command file of bed level mesh corrections.</cite>
-  <div>
-    <h5>Select an input file (e.g. CALIBRAT.TXT, G30PROBE.TXT)</h5>
-    <input type="file" id="FILE" accept="text/plain"/>
-  </div>
-  <div>
-    <h5>Add a note (optional, included in the output file)</h5>
-    <textarea id="NOTE"></textarea>
-  </div>
-  <div>
-    <input type="submit" value="Submit"/>
-  </div>
-  <details>
-    <p><i>more belongs here ...</i></p>
-  </details>
-  <h6><a href="{{- site.sister_repository_url -}}"
-	 >{{- site.sister_repository_nwo -}}</a></h6>
-</form>
+
+{% include curvefit-form.html %}

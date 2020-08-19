@@ -1,19 +1,19 @@
-/* 
+/*
  * calibrat_txt.js
  * https://github.com/aegean-odyssey/mpmd-calibration-experimental
  *
  * Copyright (c) 2020 Aegean Associates, Inc.
- * 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -32,7 +32,7 @@ function BM_init(ss) {
 	dy = math.max(dy) - math.min(dy);
     }
     BM_N = 7;
-    BM_gfx = (BM_N - 1) / dx; 
+    BM_gfx = (BM_N - 1) / dx;
     BM_gfy = (BM_N - 1) / dy;
     BM_Z = [];
     for (let n = 0; n < ss.length; n++) {
@@ -75,7 +75,7 @@ function BM_zoff(xy) {
 }
 
 function mesh(XY, Z, R=55, N=15) {
-    
+
     //const R = 55;
     //const N = 15;
 
@@ -113,7 +113,7 @@ function analyses(xy, z) {
     Z = Z.map((u, i) => u - BM_zoff(XY[i]));
 
     let W = 0.045;
-    
+
     function distribution(d, w) {
 	let ss = [];
 	function s(u, v=[]) { ss.push(math.print(u, v)) }
@@ -147,14 +147,14 @@ function analyses(xy, z) {
     function pf(v) {
 	return String(math.floor(v * 1000) / 1000);
     }
-    
+
     function rating(d, W) {
 	if (d > (3*W/9)) return 'POOR';
 	if (d > (2*W/9)) return 'FAIR';
 	if (d > (1*W/9)) return 'GOOD';
 	return 'VERY_GOOD';
     }
- 
+
     function stats(Z, R) {
 	let Q = Z.filter((u, i) => ! (math.hypot(XY[i]) > R));
 	let std = math.std(Q);
@@ -191,7 +191,7 @@ function heatmap(xy, z, t) {
     function find_radius(xy) {
 	return math.max(math.abs(math.min(xy)), math.abs(math.max(xy)));
     }
-	
+
     function gradient(z) {
 	if (z < 0.0) return '#339';
 	if (z > 1.0) return '#c03';
@@ -215,7 +215,7 @@ function heatmap(xy, z, t) {
 
     if (is_zcomp)
 	Z = Z.map((u, i) => u - BM_zoff(XY[i]));
-    
+
     let zavg = math.mean(Z);
     let zmin = math.min(Z);
     let zmax = math.max(Z);
@@ -316,11 +316,11 @@ function curvefit(str, form) {
 
     const FILENAME = 'CALIBRAT.TXT.html';
     const MIMETYPE = 'text/html';
-    
+
     let NOTE = form.elements.NOTE.value;
     let FNAM = form.elements.FILE.files[0].name;
-    
-    let FW = str.match(/mpmd_marlin[^\)]+\)/);
+
+    let FW = str.match(/FIRMWARE_NAME:[^\)]+\)/);
     let M92 = str.match(/^  M92.+/m);
     let M665 = str.match(/^  M665.+/m);
     let M665_A = str.match(/^  M665 A.+/m);
@@ -330,19 +330,28 @@ function curvefit(str, form) {
     let G29W = str.match(/^  G29 W.+/gm);
     let G33 = str.match(/^(\..+)|((Iteration|Checking|Calibration).+)/gm);
 
+    if (! (FW || M92 || M665 || M665_A || M666 || M851 || BEDX || G29W || G33))
+	return ['Found nothing to report. Aborting.'];
+
     let ss;
-    ss = BEDX.map(u => u.match(/[-+.0-9]+/g));
-    let bXY = ss.map(u => [+u[0], +u[1]]);
-    let bZ = ss.map(u => +u[2]);
-    ss = G29W.map(u => u.match(/[-+.0-9]+/g));
-    let gXY = ss.map(u => [+u[4], +u[5]]);
-    let gZ = ss.map(u => +u[3]);
 
-    if (ss[0].length < 6)
-	// x, y are missing, so guess using mesh indices
-	gXY = ss.map(u => [xy_from_grid(+u[1]), xy_from_grid(+u[2])]);
+    let gXY, gZ;
+    if (BEDX) {
+	ss = BEDX.map(u => u.match(/[-+.0-9]+/g));
+	let bXY = ss.map(u => [+u[0], +u[1]]);
+	let bZ = ss.map(u => +u[2]);
+    }
 
-    BM_init(ss);
+    let gXY, gZ
+    if (G29W) {
+	ss = G29W.map(u => u.match(/[-+.0-9]+/g));
+	gXY = ss.map(u => [+u[4], +u[5]]);
+	gZ = ss.map(u => +u[3]);
+	if (ss[0].length < 6)
+	    // x, y are missing, so guess using mesh indices
+	    gXY = ss.map(u => [xy_from_grid(+u[1]), xy_from_grid(+u[2])]);
+	BM_init(ss);
+    }
 
     ss = [];
     function s(u, v=[]) {
@@ -367,7 +376,11 @@ function curvefit(str, form) {
 
     s('<h2>$0</h2>', [FNAM]);
 
-    s('<h4>FIRMWARE: $0</h4>', FW ? FW : ['NOT_FOUND']);
+    if (! FW) FW = ['NOT_FOUND'];
+    // shorten the firmware string a little bit
+    FW = FW.map(u => u.replace('FIRMWARE_NAME:Marlin ', ''));
+
+    s('<h4>FIRMWARE: $0</h4>', FW);
     if (NOTE) s('<p>NOTE: $0</p>', [NOTE]);
 
     if (M92 || M665 || M665_A || M666 || M851) {
@@ -431,6 +444,6 @@ function curvefit(str, form) {
     s('<footer></footer>');
     s('</body>');
     s('</html>');
-    
+
     return [ 0, ss, FILENAME, MIMETYPE ];
 }

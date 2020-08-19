@@ -21,7 +21,13 @@ form_handler: calibrat_txt.html
     <input type="submit" value="Submit"/>
   </div>
   <details>
-    <p><i>more belongs here ...</i></p>
+    <p>The tool through the file (e.g. CALIBRAT.TXT) to extract basic
+      information such as the firmware version number and machine's
+      configuration and geometry. If the file contains the output of
+      a <code>G33</code> command, these results are listed as well.</p>
+    <p>This tool also extracts and displays probe results and the bed
+      level mesh. If it finds both, it will use the same bilinear z-offset
+      correction as the printer to see how well the calibration performs.</p>
   </details>
   <h6><a href="{{- site.sister_repository_url -}}"
 	 >{{- site.sister_repository_nwo -}}</a></h6>

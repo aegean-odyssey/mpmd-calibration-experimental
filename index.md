@@ -12,7 +12,7 @@ Here are some scripts that can be used to post-process the bed-level mesh of Mon
 ##### BED LEVEL MESH CORRECTIONS 
 * [linear least squares curve-fit](curvefit-linear.html)
 * [parabolic least squares curve-fit](curvefit-parabolic.html)
-* [inverse distance weight interpolation](curvefit-inv_dist_wgt.html)
+* [inverse distance weighted interpolation](curvefit-inv_dist_wgt.html)
 
 ##### BED PROBING PATTERNS
 * [radial pattern of 4 points](pattern-radial-4.html)
