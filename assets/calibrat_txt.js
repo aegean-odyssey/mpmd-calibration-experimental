@@ -335,14 +335,14 @@ function curvefit(str, form) {
 
     let ss;
 
-    let gXY, gZ;
+    let bXY, bZ;
     if (BEDX) {
 	ss = BEDX.map(u => u.match(/[-+.0-9]+/g));
-	let bXY = ss.map(u => [+u[0], +u[1]]);
-	let bZ = ss.map(u => +u[2]);
+	bXY = ss.map(u => [+u[0], +u[1]]);
+	bZ = ss.map(u => +u[2]);
     }
 
-    let gXY, gZ
+    let gXY, gZ;
     if (G29W) {
 	ss = G29W.map(u => u.match(/[-+.0-9]+/g));
 	gXY = ss.map(u => [+u[4], +u[5]]);
