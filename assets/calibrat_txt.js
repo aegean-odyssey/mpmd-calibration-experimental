@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+const ACCEPTABLE = 0.045;
+
 var BM_Z = [];
 var BM_N = 7;
 var BM_gfx = 0.0;
@@ -36,7 +38,7 @@ function BM_init(ss) {
     BM_gfy = (BM_N - 1) / dy;
     BM_Z = [];
     for (let n = 0; n < ss.length; n++) {
-	let [i, j, z]  = [+(ss[n])[1], +(ss[n])[2], +(ss[n])[3]];
+	let [i, j, z] = [+(ss[n])[1], +(ss[n])[2], +(ss[n])[3]];
 	BM_Z[(j * BM_N) + i] = z;
     }
 }
@@ -112,7 +114,7 @@ function analyses(xy, z) {
     let [ XY, Z, R, N ] = mesh(xy, z);
     Z = Z.map((u, i) => u - BM_zoff(XY[i]));
 
-    let W = 0.045;
+    let W = ACCEPTABLE;
 
     function distribution(d, w) {
 	let ss = [];
@@ -221,7 +223,7 @@ function heatmap(xy, z, t) {
     let zmax = math.max(Z);
     let zlow = math.max(zavg - zmin, zmax - zavg);
 
-    if (is_zcomp) zlow = 0.045;
+    if (is_zcomp) zlow = ACCEPTABLE;
 
     let ss = [];
     function s(u, v=[]) {
@@ -320,26 +322,49 @@ function curvefit(str, form) {
     let NOTE = form.elements.NOTE.value;
     let FNAM = form.elements.FILE.files[0].name;
 
-    let FW = str.match(/FIRMWARE_NAME:[^\)]+\)/);
-    let M92 = str.match(/^  M92.+/m);
-    let M665 = str.match(/^  M665.+/m);
-    let M665_A = str.match(/^  M665 A.+/m);
-    let M666 = str.match(/^  M666.+/m);
-    let M851 = str.match(/^  M851.+/m);
-    let BEDX = str.match(/Bed X.+/gm);
-    let G29W = str.match(/^  G29 W.+/gm);
-    let G33 = str.match(/^(\..+)|((Iteration|Checking|Calibration).+)/gm);
+    let ss;
 
+    let FW = str.match(/FIRMWARE_NAME:[^\)]+\)/);
+    // shorten the firmware string a little bit
+    if (FW) FW = FW.map(u => u.replace('FIRMWARE_NAME:Marlin ', ''));
+    let G33 = str.match(/^(\..+)|((Iteration|Checking|Calibration).+)/gm);
+    let BEDX = str.match(/^Bed X.+/gm);
+    // only scan output from the last M503 code 
+    ss = str.split(/^(echo:)?  G21.*$/m).pop();
+    let M92  = ss.match(/M92.+/m);
+    let M665 = ss.match(/M665.+/m);
+    let M665_A = ss.match(/M665 A.+/m);
+    let M666 = ss.match(/M666.+/m);
+    let M851 = ss.match(/M851.+/m);
+    let G29W = ss.match(/G29 W.+/gm);
+
+    if (str.match(/^;;;/)) {
+	// re-configure to look at G29_BEDFIX.gcode
+	function match_strip(re) {
+	    let s = str.match(re);
+	    return s ? s.map(u => u.replace(/^; /, '')) : s;
+	}
+	FW = match_strip(/^; FIRMWARE:.+/m);
+	if (FW) FW = FW.map(u => u.replace('FIRMWARE:', ''));
+	M92  = match_strip(/^; M92.+/m);
+	M665 = match_strip(/^; M665.+/m);
+	M665_A = match_strip(/^; M665 A.+/m);
+	M666 = match_strip(/^; M666.+/m);
+	M851 = match_strip(/^; M851.+/m);
+	BEDX = match_strip(/^; Bed X.+/gm);
+	G29W = match_strip(/^G29 W.+/gm);
+    }
+    
     if (! (FW || M92 || M665 || M665_A || M666 || M851 || BEDX || G29W || G33))
 	return ['Found nothing to report. Aborting.'];
 
-    let ss;
-
-    let bXY, bZ;
+    let bXY, bZ, bQ = null;
     if (BEDX) {
 	ss = BEDX.map(u => u.match(/[-+.0-9]+/g));
 	bXY = ss.map(u => [+u[0], +u[1]]);
 	bZ = ss.map(u => +u[2]);
+	if (ss[0].length > 3)
+	    bQ = ss.map(u => +u[3]);
     }
 
     let gXY, gZ;
@@ -376,11 +401,7 @@ function curvefit(str, form) {
 
     s('<h2>$0</h2>', [FNAM]);
 
-    if (! FW) FW = ['NOT_FOUND'];
-    // shorten the firmware string a little bit
-    FW = FW.map(u => u.replace('FIRMWARE_NAME:Marlin ', ''));
-
-    s('<h4>FIRMWARE: $0</h4>', FW);
+    s('<h4>FIRMWARE: $0</h4>', FW ? FW : ['NOT_FOUND']);
     if (NOTE) s('<p>NOTE: $0</p>', [NOTE]);
 
     if (M92 || M665 || M665_A || M666 || M851) {
