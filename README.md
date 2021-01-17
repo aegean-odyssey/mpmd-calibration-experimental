@@ -1,3 +1,3 @@
-# mpmd calibration experimental
+# [mpmd calibration experimental](https://aegean-odyssey.github.io/mpmd-calibration-experimental)
 
-Here are some scripts that can be used to post-process the bed-level mesh of Monoprice MP Mini Delta 3d printer with [mpmd_marlin_1.1.x firmware](https://github.com/aegean-odyssey/mpmd_marlin_1.1.x) installed. This work is purely experimental -- the objective is to develop ways to evaluate and improve the calibration procedures in the mpmd_marlin_1.1.x firmware.
+Here is a [website](https://aegean-odyssey.github.io/mpmd-calibration-experimental) with on-line tools that can be used to post-process the bed-level mesh of the Monoprice MP Mini Delta 3d printer equipped with [`mpmd_marlin_1.1.x`](https://github.com/aegean-odyssey/mpmd_marlin_1.1.x) firmware. This work is purely experimental -- the objective is to develop ways to evaluate and improve the calibration procedures (and maybe a few other things) in the [`mpmd_marlin_1.1.x`](https://github.com/aegean-odyssey/mpmd_marlin_1.1.x) firmware.
