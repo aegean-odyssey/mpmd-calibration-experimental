@@ -6,3 +6,5 @@ description: >
 logo: assets/logo.jpg
 sister_repository_url: https://github.com/aegean-odyssey/mpmd_marlin_1.1.x
 sister_repository_nwo: mpmd_marlin_1.1.x firmware
+exclude:
+  README.md
